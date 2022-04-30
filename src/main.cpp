@@ -1,8 +1,10 @@
 #include <Arduino.h>
 #include "config.h"
 #include "TempCtrl.h"
+#include "Matrix.h"
 
 TempCtrl temp;
+Matrix matrix;
 
 void setup() {
     Serial.begin(9600);
@@ -19,6 +21,8 @@ void setup() {
 
     pinMode(LED_BUILTIN, OUTPUT);
     // Initialise any classes.
+
+    matrix.set(0);
 }
 
 void loop() {
@@ -27,14 +31,18 @@ void loop() {
     int water = temp.water();
     int exhaust = temp.exhaust();
 
-    char str[64];
-    sprintf(str, "water: %d, exhaust: %d, err?: %d\n", water, exhaust, err);
-    Serial.print(str);
+    // char str[64];
+    // sprintf(str, "water: %d, exhaust: %d, err?: %d\n", water, exhaust, err);
+    // Serial.print(str);
 
+    matrix.update();
 
-    digitalWrite(LED_BUILTIN, 0);
-    delay(100);
-    digitalWrite(LED_BUILTIN, 1);
+    if ((millis() / 15000) % 2 == 0) {
+        matrix.set(255);
+    } else {
+        matrix.set(0);
+    }
+
     delay(100);
 
 }
