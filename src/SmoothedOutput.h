@@ -7,6 +7,7 @@
 
 
 class SmoothedOutput {
+protected:
     unsigned char pin;
     unsigned char min;
     unsigned char max;
@@ -21,11 +22,11 @@ public:
 
     SmoothedOutput(unsigned char pin, unsigned short smoothing, unsigned char min = 0, unsigned char max = 255, bool allowZero = true);
 
-    void update();
+    virtual void update();
 
-    void set(unsigned char value);
+    virtual void set(unsigned char value);
 
-    unsigned char get();
+    virtual unsigned char get();
 };
 
 
