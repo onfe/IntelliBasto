@@ -8,8 +8,8 @@
 #define PIN_FAN 5
 #define PIN_GLOW 3
 
-#define PIN_RFH_1 8
-#define PIN_RFH_2 7
+#define PIN_RFH_1 7
+#define PIN_RFH_2 8
 
 #define PIN_THERM_EXHAUST 0
 #define PIN_THERM_WATER_A 1
@@ -26,5 +26,7 @@
 #define THERM_SH_COEFF_C -0.0000001788484
 
 #define BIAS_RESISTOR_OHMS 20000
+
+#define MODE_CHANGE_DELAY 3000
 
 #endif //INTELLIBASTO_CONFIG_H

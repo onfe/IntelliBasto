@@ -4,12 +4,14 @@
 #include "Matrix.h"
 #include "Fuel.h"
 #include "Glow.h"
+#include "Modes.h"
 
 
 TempCtrl temp;
 Matrix matrix;
 Fuel fuel;
 Glow glow;
+Modes modes;
 
 void setup() {
     Serial.begin(9600);
@@ -37,8 +39,6 @@ void loop() {
     int water = temp.water();
     int exhaust = temp.exhaust();
     
-    Serial.print(digitalRead(PIN_RFH_1));
-
     // char str[64];
     // sprintf(str, "water: %d, exhaust: %d, err?: %d\n", water, exhaust, err);
     // Serial.print(str);
@@ -46,6 +46,9 @@ void loop() {
     matrix.update();
     fuel.update();
     glow.update();
+    modes.update();
+
+    Serial.println(modes.get());
 
     if ((millis() / 15000) % 2 == 0) {
         // matrix.set(255);
