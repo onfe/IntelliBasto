@@ -19,6 +19,7 @@ public:
 
     virtual void set(float value);
     void update() override;
+    virtual unsigned char get() { return SmoothedOutput::get(); }
 };
 
 

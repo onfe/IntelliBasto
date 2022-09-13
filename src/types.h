@@ -8,13 +8,14 @@ enum Status {
 
 enum State {
     IDLE = 0,
-    PRE_IGNITION = 1,
-    IGNITION = 2,
-    POST_IGNITION = 3,
-    BURN = 4,
-    COOL_DOWN = 5,
-    FAIL = 6,
-    PRIME = 7
+    CIRCULATE = 1,
+    PRE_IGNITION = 2,
+    IGNITION = 3,
+    POST_IGNITION = 4,
+    BURN = 5,
+    COOL_DOWN = 6,
+    FAIL = 7,
+    PRIME = 8
 };
 
 enum Mode {

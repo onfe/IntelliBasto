@@ -24,10 +24,10 @@ void SmoothedOutput::update() {
 }
 
 void SmoothedOutput::set(unsigned char value) {
-    if (value == to) return;
-
     if (value != 0 || !allowZero)
         value = constrain(value, this->min, this->max);
+
+    if (value == to) return;
 
     this->from = constrain(get(), min, max);
     this->to = value;

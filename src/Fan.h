@@ -10,7 +10,7 @@
 
 class Fan : public SmoothedOutput {
 public:
-    Fan() : SmoothedOutput(PIN_FAN, 5000U, 32U, 169U, true) {}
+    Fan() : SmoothedOutput(PIN_FAN, 10000U, 24U, 169U, true) {}
 };
 
 #endif //INTELLIBASTO_FAN_H

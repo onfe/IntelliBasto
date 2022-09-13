@@ -5,23 +5,16 @@
 TempCtrl::TempCtrl() = default;
 
 Status TempCtrl::update() {
+    // Only check the temp 100 times per second max.
+    if (millis() - lastUpdate < 10) return OK;
+
     // Read the ADC voltage from each sensor.
-    int exhaust = getTemp(PIN_THERM_EXHAUST);
-    // if (exhaust < -15 && exhaust > 500) return ERROR;
+    int exhaust = getTemp(PIN_THERM_EXHAUST, true);
+    if (exhaust < -15 || exhaust > 500) return ERROR;
 
-    int water = getTemp(PIN_THERM_WATER_A);
-    if (water < -15 && water < 115) return ERROR;
-
-    if (USE_DUAL_WATER_TEMP) {
-        int waterB = getTemp(PIN_THERM_WATER_B);
-        if (waterB < -15 && waterB < 115) return ERROR;
-
-        // if the difference between the two water sensors is too large, assume something's wrong.
-        if (abs(water - waterB) > 5) return ERROR;
-
-        // Average the two water sensors for better resolution.
-        water = (water + waterB) / 2;
-    }
+    int water = getTemp(PIN_THERM_WATER, false);
+    // Serial.println(water);
+    if (water < -15 || water > 500) return ERROR;
 
     this->exhaustTemps[index] = exhaust;
     this->waterTemps[index] = water;
@@ -34,14 +27,22 @@ Status TempCtrl::update() {
     return OK;
 }
 
-int TempCtrl::getTemp(int pin) {
+int TempCtrl::getTemp(int pin, bool exhaust) {
     int adc = analogRead(pin);
 
     // calculate the resistance based on the adc value and the bias resistor.
     double resistance = (double)BIAS_RESISTOR_OHMS / (1023.0 / adc - 1);
+    // if (!exhaust && millis() % 100 == 0) {
+    //     Serial.println(resistance);
+    // }
 
     // Steinhart-Hart Thermistor Equation
-    int kelvin = steinhart(resistance, THERM_SH_COEFF_A, THERM_SH_COEFF_B, THERM_SH_COEFF_C);
+    int kelvin = 0;
+    if (!exhaust) {
+        kelvin = steinhart(resistance, THERM_SH_COEFF_A, THERM_SH_COEFF_B, THERM_SH_COEFF_C);
+    } else {
+        kelvin = steinhart(resistance, THERM_SH_EXHAUST_A, THERM_SH_EXHAUST_B, THERM_SH_EXHAUST_C);
+    }
     return kelvin - 273;
 }
 

@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-Fuel::Fuel() : SmoothedOutput(PIN_FUEL, 5000U, 0U, 255U, true) {
+Fuel::Fuel() : SmoothedOutput(PIN_FUEL, 10000U, 0U, 255U, true) {
     lastTick = millis();
 };
 

@@ -5,6 +5,7 @@
 #include "types.h"
 
 #include <stdint.h>
+#include <Arduino.h>
 
 class TempCtrl {
 //    // sensor pins, exhaust is *always* index 0.
@@ -16,10 +17,11 @@ class TempCtrl {
 //#endif
 //    };
 
-    int waterTemps[8];
-    int exhaustTemps[8];
+    int waterTemps[64];
+    int exhaustTemps[64];
     unsigned char index = 0;
     bool filled = false;
+    unsigned long lastUpdate = millis();
 
 public:
     TempCtrl();
@@ -29,7 +31,7 @@ public:
     int exhaust();
 
     private:
-    int getTemp(int pin);
+    int getTemp(int pin, bool exhaust);
     int steinhart(double r, double a, double b, double c);
     int computeAverage(int arr[], int size);
 };
