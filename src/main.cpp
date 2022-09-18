@@ -149,7 +149,13 @@ void statePostIgnition()
     //     exhaust_previous = temp.exhaust();
     // }
 
-    if (timeInState() > (long)TIME_POST_IGNITION)
+    if (temp.exhaust() > exhaust_previous + EXHAUST_LIT_DELTA && timeInState() > MIN_TIME_POST_IGNITION) {
+        setState(BURN);
+        exhaust_previous = temp.exhaust();
+    }
+
+
+    if (timeInState() > (long)MAX_TIME_POST_IGNITION)
     {
         if (temp.exhaust() > exhaust_previous + EXHAUST_LIT_DELTA)
         {
@@ -184,7 +190,11 @@ void stateBurn()
 
 
     if (temp.exhaust() > 250) {
-        desired_fuelling_rate = FUEL_MIN_HZ;
+        desired_fuelling_rate = desired_fuelling_rate - 1;
+    }
+
+    if (temp.exhaust() > 255) {
+        desired_fuelling_rate = desired_fuelling_rate - 1;
     }
 
     unsigned char desired_fan_speed = fuelmap(desired_fuelling_rate);
@@ -236,7 +246,7 @@ void stateCooldown()
     pump.set(255);
     fuel.set(0);
 
-    if (timeInState() > (long)TIME_COOL_DOWN && temp.exhaust() < 50)
+    if (timeInState() > (long)TIME_COOL_DOWN && temp.exhaust() < 60)
     {
         setState(IDLE);
         return;
