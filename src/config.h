@@ -3,9 +3,9 @@
 
 // Pins
 #define PIN_MATRIX 10
-#define PIN_FUEL 9
+#define PIN_FUEL 5
 #define PIN_WATER 6
-#define PIN_FAN 5
+#define PIN_FAN 9
 #define PIN_GLOW 3
 
 #define PIN_RFH_1 7
