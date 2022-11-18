@@ -5,12 +5,12 @@
 void Glow::update() {
     unsigned char value = get();
 
+    on = value > 0;
+
     // if the glow plug is off, record that it's off now.
     if (!on) {        
         timeLastOff = millis();
     }
-
-    on = value > 0;
 
     // if the glowplug has been on for longer than it should, turn it off.
     if (millis() - timeLastOff > maxOnTime && on) {

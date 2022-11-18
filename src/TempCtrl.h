@@ -22,6 +22,7 @@ class TempCtrl {
     unsigned char index = 0;
     bool filled = false;
     unsigned long lastUpdate = millis();
+    unsigned char discardedValues = 0;
 
 public:
     TempCtrl();

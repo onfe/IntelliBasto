@@ -251,6 +251,10 @@ void stateCooldown()
         setState(IDLE);
         return;
     }
+
+    if (timeInState() > (long)TIME_COOL_DOWN && modes.get() != OFF) {
+        setState(CIRCULATE);
+    }
 }
 
 void stateFail()

@@ -10,11 +10,15 @@ Status TempCtrl::update() {
 
     // Read the ADC voltage from each sensor.
     int exhaust = getTemp(PIN_THERM_EXHAUST, true);
-    if (exhaust < -15 || exhaust > 500) return ERROR;
-
     int water = getTemp(PIN_THERM_WATER, false);
-    // Serial.println(water);
-    if (water < -15 || water > 500) return ERROR;
+
+    if (exhaust < -15 || exhaust > 500 || water < -15 || water > 500) {
+        if (++discardedValues > 16) return ERROR;
+        Serial.println("Invalid temp reading, discarding.");
+    } else {
+        discardedValues = 0;
+    }
+
 
     this->exhaustTemps[index] = exhaust;
     this->waterTemps[index] = water;
