@@ -24,6 +24,7 @@ public:
     bool lit() { return !exhaust_decreasing; }
     void reset()
     {
+        last_result = 2.5;
         prev_exhaust[0] = 0.0;
         prev_exhaust[1] = 0.0;
         prev_exhaust[2] = 0.0;
@@ -55,35 +56,50 @@ double BurnCtrl::calculate(int curr, int exhaust)
 
     double result = Pout;
 
+    if (exhaust > 275) {
+        result = last_result - 0.1;
+    } else if (exhaust > 260) {
+        result = last_result - 0.05;
+    } else if (exhaust > 250) {
+        result = last_result;
+    }
+
+    if (exhaust < 200 && result <= last_result) {
+        result = last_result + 0.02;
+    }
+
     result = constrain(result, last_result - 0.1, last_result + 0.1);
 
     result = min(result, FUEL_MAX_HZ);
     result = max(result, FUEL_MIN_HZ);
 
-    prev_exhaust[2] = prev_exhaust[1];
-    prev_exhaust[1] = prev_exhaust[0];
-    prev_exhaust[0] = exhaust;
-
-    if (prev_exhaust[2] - prev_exhaust[1] > 3 && prev_exhaust[1] - prev_exhaust[0] > 3 && result >= last_result)
+    if (prev_exhaust[2] - prev_exhaust[1] > 3 && prev_exhaust[1] - prev_exhaust[0] > 3 && prev_exhaust[0] - exhaust > 3 && result >= last_result)
     {
-        Serial.println("Exhaust temperature decreasing!");
+        Serial.println("Exhaust temperature decreasing during fuelling increase!");
         Serial.println(prev_exhaust[2]);
         Serial.println(prev_exhaust[1]);
         Serial.println(prev_exhaust[0]);
         exhaust_decreasing = true;
     }
-    else if (prev_exhaust[2] - prev_exhaust[1] > 5 && prev_exhaust[1] - prev_exhaust[0] > 5)
+    else if (prev_exhaust[2] - prev_exhaust[1] > 5 && prev_exhaust[1] - prev_exhaust[0] > 5 && prev_exhaust[0] - exhaust > 5)
     {
-        Serial.println("Exhaust temperature decreasing!");
+        Serial.println("Exhaust temperature decreasing too fast!");
         Serial.println(prev_exhaust[2]);
         Serial.println(prev_exhaust[1]);
         Serial.println(prev_exhaust[0]);
+        exhaust_decreasing = true;
+    }
+    else if (prev_exhaust[1] - prev_exhaust[0] > 7 && prev_exhaust[0] - exhaust > 7) {
         exhaust_decreasing = true;
     }
     else
     {
         exhaust_decreasing = false;
     }
+
+    prev_exhaust[2] = prev_exhaust[1];
+    prev_exhaust[1] = prev_exhaust[0];
+    prev_exhaust[0] = exhaust;
 
     last_result = result;
 
