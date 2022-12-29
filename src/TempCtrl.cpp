@@ -6,7 +6,7 @@ TempCtrl::TempCtrl() = default;
 
 Status TempCtrl::update() {
     // Only check the temp 100 times per second max.
-    if (millis() - lastUpdate < 10) return OK;
+    if (millis() - lastUpdate < 20) return OK;
 
     // Read the ADC voltage from each sensor.
     int exhaust = getTemp(PIN_THERM_EXHAUST, true);
@@ -14,7 +14,7 @@ Status TempCtrl::update() {
 
     if (exhaust < -15 || exhaust > 500 || water < -15 || water > 500) {
         if (++discardedValues > 16) return ERROR;
-        Serial.println("Invalid temp reading, discarding.");
+        // Serial.println("Invalid temp reading, discarding.");
     } else {
         discardedValues = 0;
     }

@@ -44,7 +44,7 @@ void stateIdle()
     glow.set(0);
     fan.set(0);
     fuel.set(0);
-    matrix.set(0);
+    // matrix.set(0);
 
     if (modes.get() != OFF && temp.water() > TEMP_SETPOINT - TEMP_BAND) {
         pump.set(255);
@@ -92,7 +92,7 @@ void stateCirculate()
     }
     else
     {
-        fan.set(64);
+        fan.set(92);
     }
 }
 
@@ -121,9 +121,21 @@ void statePreIgnition()
 void stateIgnition()
 {
     glow.set(255);
-    fan.set(32);
+    // fan.set(32);
     pump.set(255);
-    fuel.set(2);
+    // fuel.set(2);
+
+    if (timeInState() > (long)TIME_IGNITION / 2) {
+        fan.set(48);
+        fuel.set(2.5);
+    } else {
+        fan.set(32);
+        if (timeInState() < 10000) {
+            fuel.set(1);
+        } else {
+            fuel.set(2);
+        }
+    }
 
     if (timeInState() > (long)TIME_IGNITION)
     {
@@ -137,7 +149,7 @@ void statePostIgnition()
     glow.set(0);
     fan.set(32);
     pump.set(255);
-    fuel.set(2); // run a bit rich whilst we warm up, gives best chance of successful burn.
+    fuel.set(2.5); // run a bit rich whilst we warm up, gives best chance of successful burn.
 
     burnCtrl.reset();
 
@@ -189,13 +201,13 @@ void stateBurn()
     double desired_fuelling_rate = burnCtrl.calculate(temp.water(), temp.exhaust());
 
 
-    if (temp.exhaust() > 250) {
-        desired_fuelling_rate = desired_fuelling_rate - 1;
-    }
+    // if (temp.exhaust() > 250) {
+    //     desired_fuelling_rate = desired_fuelling_rate - 1;
+    // }
 
-    if (temp.exhaust() > 255) {
-        desired_fuelling_rate = desired_fuelling_rate - 1;
-    }
+    // if (temp.exhaust() > 255) {
+    //     desired_fuelling_rate = desired_fuelling_rate - 1;
+    // }
 
     unsigned char desired_fan_speed = fuelmap(desired_fuelling_rate);
 
@@ -203,7 +215,7 @@ void stateBurn()
     // Serial.print(" ");
     // Serial.println(desired_fan_speed);
 
-    if (temp.exhaust() < 100) {
+    if (temp.exhaust() < 120) {
         desired_fuelling_rate = desired_fuelling_rate * 1.25;
     }
 
@@ -263,7 +275,7 @@ void stateFail()
     fan.set(255);
     pump.set(255);
     fuel.set(0);
-    matrix.set(255);
+    // matrix.set(64);
 
     if (
         timeInState() > (long)TIME_COOL_DOWN &&
@@ -274,7 +286,7 @@ void stateFail()
         fan.set(0);
         pump.set(0);
         fuel.set(0);
-        matrix.set(0);
+        // matrix.set(0);
 
         if (timeInState() > (long)TIME_FAIL)
         {
@@ -304,9 +316,33 @@ void statePrime()
     }
 }
 
+void handleMatrix() {
+    if (modes.get() == OFF || pump.get() < 255) {
+        matrix.set(0);
+        return;
+    }
+
+    if (modes.get() == HEAT_S2 && temp.water() > TEMP_SETPOINT - TEMP_BAND) {
+        matrix.set(255);
+        return;
+    }
+
+    if (modes.get() == HEAT_S2 && temp.water() > 45) {
+        matrix.set(255);
+        return;
+    }
+
+    if (modes.get() == HEAT_S1 && temp.water() > TEMP_SETPOINT + (TEMP_BAND / 2)) {
+        matrix.set(255);
+        return;
+    }
+
+    matrix.set(0);
+}
+
 void sanity()
 {
-    if (temp.exhaust() > 300)
+    if (temp.exhaust() > 325)
     {
         setState(COOL_DOWN);
     }
@@ -332,6 +368,10 @@ void sanity()
 void setup()
 {
     Serial.begin(9600);
+
+    // // Pins D9 and D10 - 4 kHz
+    // TCCR1A = 0b00000001; // 8bit
+    // TCCR1B = 0b00000010; // x8 phase correct
 
     // Initialise the pins required.
     pinMode(PIN_MATRIX, OUTPUT);
@@ -465,6 +505,7 @@ void loop()
 
     logging();
     sanity();
+    handleMatrix();
 
     if (err)
     {

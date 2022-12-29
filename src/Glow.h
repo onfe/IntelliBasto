@@ -5,13 +5,13 @@
 #include "SmoothedOutput.h"
 
 class Glow : public SmoothedOutput {
-    static const unsigned int maxOnTime = 2 * 60 * 1000;
+    static const unsigned long maxOnTime = 2 * 60 * 1000;
 
     unsigned long timeLastOff = 0;
     bool on = false;
 
 public:
-    Glow() : SmoothedOutput(PIN_GLOW, 1000U, 0U, 255U, true) {}
+    Glow() : SmoothedOutput(PIN_GLOW, 3000U, 0U, 255U, true) {}
 
     void update() override;
 };

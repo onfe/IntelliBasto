@@ -8,7 +8,7 @@
 
 class Matrix : public SmoothedOutput {
 public:
-    Matrix() : SmoothedOutput(PIN_MATRIX, 5000U, 64U, 255U, true) {}
+    Matrix() : SmoothedOutput(PIN_MATRIX, 10U, 230U, 255U, true) {}
 };
 
 #endif //INTELLIBASTO_MATRIX_H

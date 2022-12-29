@@ -15,7 +15,7 @@
 #define PIN_THERM_EXHAUST 0
 #define PIN_THERM_WATER 1
 
-#define TEMP_SETPOINT 55
+#define TEMP_SETPOINT 60
 #define TEMP_BAND 5
 
 // Uncomment to use dual water temperature sensors.
@@ -23,11 +23,11 @@
 
 #define MIN_TIME_IDLE 30 * 1000
 #define MIN_TIME_CIRCULATE 20 * 1000
-#define TIME_PRE_IGNITION 15 * 1000
-#define TIME_IGNITION 40 * 1000
+#define TIME_PRE_IGNITION 30 * 1000
+#define TIME_IGNITION 60 * 1000
 #define MIN_TIME_POST_IGNITION 20 * 1000
 #define MAX_TIME_POST_IGNITION 60 * 1000
-#define TIME_BURN 30 * 1000
+#define TIME_BURN 15 * 1000
 #define TIME_COOL_DOWN 30 * 1000
 #define TIME_FAIL 15 * 60 * 1000
 
@@ -62,7 +62,7 @@
 
 #define PID_Kp 0.8
 #define PID_DT 5000
-#define FUEL_MAX_HZ 4.0
+#define FUEL_MAX_HZ 3.2
 #define FUEL_MIN_HZ 2.0
 
 #endif //INTELLIBASTO_CONFIG_H
