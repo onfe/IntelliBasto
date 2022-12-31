@@ -2,7 +2,7 @@
 #define INTELLIBASTO_MATRIX_H
 
 #include "config.h"
-#include "SmoothedOutput.h"
+#include "SmoothedOutput.hpp"
 
 #include <Arduino.h>
 

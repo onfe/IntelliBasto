@@ -18,11 +18,15 @@
 #define TEMP_SETPOINT 60
 #define TEMP_BAND 5
 
+#define TEMP_LOWER TEMP_SETPOINT - TEMP_BAND
+#define TEMP_UPPER TEMP_SETPOINT + TEMP_BAND
+
+
 // Uncomment to use dual water temperature sensors.
 #define USE_DUAL_WATER_TEMP 0
 
 #define MIN_TIME_IDLE 30 * 1000
-#define MIN_TIME_CIRCULATE 20 * 1000
+#define MIN_TIME_CIRCULATE 10 * 1000
 #define TIME_PRE_IGNITION 30 * 1000
 #define TIME_IGNITION 60 * 1000
 #define MIN_TIME_POST_IGNITION 20 * 1000

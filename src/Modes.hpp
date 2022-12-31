@@ -1,8 +1,7 @@
-#ifndef INTELLIBASTO_MODES_H
-#define INTELLIBASTO_MODES_H
+#ifndef INTELLIBASTO_MODES_HPP
+#define INTELLIBASTO_MODES_HPP
 
 #include "types.h"
-
 
 class Modes {
     static const unsigned char checkInterval = 10;
@@ -14,15 +13,18 @@ class Modes {
     unsigned long lastModeChange;
 
     // set the heater to 'off' on startup.
-    Mode currentMode = OFF;
+    Mode currentMode = Mode::OFF;
 
 public:
     Modes();
 
     void update();
+    void init();
 
     Mode get();
+
+    const char * getString();
 };
 
 
-#endif //INTELLIBASTO_MODES_H
+#endif //INTELLIBASTO_MODES_HPP

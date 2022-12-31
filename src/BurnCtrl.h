@@ -7,10 +7,10 @@
 class BurnCtrl
 {
 private:
-    long last_calculate;
+    unsigned long last_calculate;
     int setpoint;
     double Kp;
-    int dt;
+    unsigned int dt;
 
     double last_result;
     double prev_exhaust[3] = {0, 0, 0};

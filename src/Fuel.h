@@ -2,24 +2,28 @@
 #define INTELLIBASTO_FUEL_H
 
 #include "config.h"
-#include "SmoothedOutput.h"
+#include "SmoothedOutput.hpp"
 
 
-class Fuel : private SmoothedOutput {
-    // gives the range of 0 - 8Hz in 1/32Hz (0.03125Hz) increments.
-    static const unsigned char multiplier = 32;
+class Fuel : public SmoothedOutput {
+private:
+    unsigned long lastTick = 0;
 
     // ms the output is high for.
     static const unsigned char tickLength = 50;
 
-    unsigned long lastTick = 0;
-    
 public:
-    Fuel();
+    // gives the range of 0 - 8Hz in 1/32Hz (0.03125Hz) increments.
+    static const unsigned char multiplier = 32;
 
+    Fuel() : SmoothedOutput(PIN_FUEL, 10000U, 0U, 255U, true), lastTick{millis()} {}
+
+    void set(unsigned char value) override;
     virtual void set(float value);
+    void ramp(unsigned char value) override;
+    void ramp(float hz);
     void update() override;
-    virtual unsigned char get() { return SmoothedOutput::get(); }
+
 };
 
 

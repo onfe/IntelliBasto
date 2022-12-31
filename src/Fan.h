@@ -2,7 +2,7 @@
 #define INTELLIBASTO_FAN_H
 
 #include "config.h"
-#include "SmoothedOutput.h"
+#include "SmoothedOutput.hpp"
 
 #include <Arduino.h>
 
@@ -10,7 +10,7 @@
 
 class Fan : public SmoothedOutput {
 public:
-    Fan() : SmoothedOutput(PIN_FAN, 10000U, 24U, 169U, true) {}
+    Fan() : SmoothedOutput(PIN_FAN, 5000U, 24U, 169U, true) {}
 };
 
 #endif //INTELLIBASTO_FAN_H

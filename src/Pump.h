@@ -2,13 +2,13 @@
 #define INTELLIBASTO_PUMP_H
 
 #include "config.h"
-#include "SmoothedOutput.h"
+#include "SmoothedOutput.hpp"
 
 #include <Arduino.h>
 
-class Pump : public SmoothedOutput {
+class Pump : public Output {
 public:
-    Pump() : SmoothedOutput(PIN_WATER, 500U, 32U, 255U, true) {}
+    Pump() : Output(PIN_WATER) {}
 };
 
 #endif //INTELLIBASTO_PUMP_H

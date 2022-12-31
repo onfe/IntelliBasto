@@ -1,4 +1,4 @@
-#include "Modes.h"
+#include "Modes.hpp"
 #include "config.h"
 
 #include <Arduino.h>
@@ -12,8 +12,8 @@ void Modes::update() {
     if (millis() - lastCheck < checkInterval) return;
     lastCheck = millis();
 
-    // ye-olde bit field, 0 = off, 1 = stage 1, 2 = stage 2, 3 = both stages.
-    unsigned char value = !digitalRead(PIN_RFH_1) | (!digitalRead(PIN_RFH_2) << 1);
+    // ye-olde bit field
+    unsigned char value = !digitalRead(PIN_RFH_1) | (!digitalRead(PIN_RFH_2) << 1 | digitalRead(PIN_PRIME) << 2);
     inputs[index] = value;
 
     ++index;
@@ -33,12 +33,14 @@ void Modes::update() {
 
     if (inp0 == 255) return;
 
-    if (inp0 > 1) {
-        output = HEAT_S2;
-    } else if (inp0 > 0) {
-        output = HEAT_S1;
+    if (inp0 == 0x01) {
+        output = Mode::PRIME;
+    } else if (inp0 & 0x02) {
+        output = Mode::HEAT_S2;
+    } else if (inp0 & 0x01) {
+        output = Mode::HEAT_S1;
     } else {
-        output = OFF;
+        output = Mode::OFF;
     }
 
     if (output != currentMode) {
@@ -47,6 +49,26 @@ void Modes::update() {
     }
 }
 
+void Modes::init() {
+    pinMode(PIN_RFH_1, INPUT_PULLUP);
+    pinMode(PIN_RFH_2, INPUT_PULLUP);
+    pinMode(PIN_PRIME, INPUT_PULLUP);
+}
+
 Mode Modes::get() {
     return currentMode;
+}
+
+const char * Modes::getString() {
+    Mode m = get();
+    switch (m) {
+        case Mode::OFF:
+            return "OFF";
+        case Mode::HEAT_S1:
+            return "H-1";
+        case Mode::HEAT_S2:
+            return "H-2";
+        case Mode::PRIME:
+            return "PRM";
+    }
 }
