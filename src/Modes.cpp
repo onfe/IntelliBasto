@@ -13,7 +13,7 @@ void Modes::update() {
     lastCheck = millis();
 
     // ye-olde bit field
-    unsigned char value = !digitalRead(PIN_RFH_1) | (!digitalRead(PIN_RFH_2) << 1 | digitalRead(PIN_PRIME) << 2);
+    unsigned char value = !(digitalRead(PIN_RFH_1)) | !(digitalRead(PIN_RFH_2)) << 1 | !(digitalRead(PIN_PRIME)) << 2;
     inputs[index] = value;
 
     ++index;
@@ -33,7 +33,7 @@ void Modes::update() {
 
     if (inp0 == 255) return;
 
-    if (inp0 == 0x01) {
+    if (inp0 == 0x04) {
         output = Mode::PRIME;
     } else if (inp0 & 0x02) {
         output = Mode::HEAT_S2;
