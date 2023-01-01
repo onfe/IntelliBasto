@@ -21,6 +21,10 @@
 #define TEMP_LOWER TEMP_SETPOINT - TEMP_BAND
 #define TEMP_UPPER TEMP_SETPOINT + TEMP_BAND
 
+#define TEMP_EXHAUST_MINIMUM 150
+#define TEMP_EXHAUST_MAXIMUM 350
+#define TEMP_EXHAUST_LIMIT 400
+
 
 // Uncomment to use dual water temperature sensors.
 #define USE_DUAL_WATER_TEMP 0

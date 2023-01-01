@@ -7,12 +7,8 @@
 #include "Modes.hpp"
 #include "Fan.h"
 #include "Pump.h"
-#include "FuelMap.h"
 #include "Heater.hpp"
-#include "State.hpp"
-#include "state/Idle.hpp"
-#include "state/Circulate.hpp"
-#include "state/PreIgnition.hpp"
+#include "state/States.hpp"
 
 Heater heater;
 State *currentState = new Idle();
@@ -38,8 +34,24 @@ void changeState(NextState s)
         case NextState::PRE_IGNITION:
             currentState = new PreIgnition();
             break;
-        default:
-            currentState = new Idle();
+        case NextState::IGNITION:
+            currentState = new Ignition();
+            break;
+        case NextState::POST_IGNITION:
+            currentState = new PostIgnition();
+            break;
+        case NextState::BURN:
+            currentState = new Burn(); //todo
+            break;
+        case NextState::EXTINGUISH:
+            currentState = new Extinguish();
+            break;
+        case NextState::COOL_DOWN:
+            currentState = new CoolDown();
+            break;
+        case NextState::FAIL:
+            currentState = new Failure();
+            break;
     }
 
     // Let the new state set itself up.
@@ -47,76 +59,7 @@ void changeState(NextState s)
 
     lastStateChange = millis();
 }
-//
-//long timeInState()
-//{
-//    return millis() - lastStateChange;
-//}
 
-//
-//void stateIgnition()
-//{
-//    glow.ramp(255);
-//    // fan.set(32);
-//    pump.on();
-//    // fuel.set(2);
-//
-//    if (timeInState() > (long)TIME_IGNITION / 2) {
-//        fan.ramp(48);
-//        fuel.set(2.5);
-//    } else {
-//        fan.ramp(32);
-//        if (timeInState() < 10000) {
-//            fuel.set(1);
-//        } else {
-//            fuel.set(2);
-//        }
-//    }
-//
-//    if (timeInState() > (long)TIME_IGNITION)
-//    {
-//        setState(POST_IGNITION);
-//        return;
-//    }
-//}
-//
-//void statePostIgnition()
-//{
-//    glow.ramp(0);
-//    fan.ramp(32);
-//    pump.on();
-//    fuel.set(2.5); // run a bit rich whilst we warm up, gives best chance of successful burn.
-//
-//    burnCtrl.reset();
-//
-//    // todo, figure out if the heater has lit and if so commence to burn, otherwise abort!
-//
-//    // if (temp.exhaust() > exhaust_previous + (EXHAUST_LIT_DELTA * 2))
-//    // {
-//    //     setState(BURN);
-//    //     exhaust_previous = temp.exhaust();
-//    // }
-//
-//    if (temp.exhaust() > exhaust_previous + EXHAUST_LIT_DELTA && timeInState() > MIN_TIME_POST_IGNITION) {
-//        setState(BURN);
-//        exhaust_previous = temp.exhaust();
-//    }
-//
-//
-//    if (timeInState() > (long)MAX_TIME_POST_IGNITION)
-//    {
-//        if (temp.exhaust() > exhaust_previous + EXHAUST_LIT_DELTA)
-//        {
-//            setState(BURN);
-//            exhaust_previous = temp.exhaust();
-//        }
-//        else
-//        {
-//            Serial.println("Exhaust temperature did not rise after ignition.");
-//            setState(COOL_DOWN);
-//        }
-//    }
-//}
 //
 //void stateBurn()
 //{
@@ -187,71 +130,6 @@ void changeState(NextState s)
 //
 //}
 //
-//void stateCooldown()
-//{
-//    glow.ramp(0);
-//    fan.ramp(64);
-//    pump.on();
-//    fuel.set(0);
-//
-//    if (timeInState() > (long)TIME_COOL_DOWN && temp.exhaust() < 60)
-//    {
-//        setState(IDLE);
-//        return;
-//    }
-//
-//    if (timeInState() > (long)TIME_COOL_DOWN && modes.get() != OFF) {
-//        setState(CIRCULATE);
-//    }
-//}
-//
-//void stateFail()
-//{
-//    glow.ramp(0);
-//    fan.ramp(255);
-//    pump.on();
-//    fuel.set(0);
-//    // matrix.set(64);
-//
-//    if (
-//        timeInState() > (long)TIME_COOL_DOWN &&
-//        temp.exhaust() < 50 &&
-//        temp.water() < 50)
-//    {
-//        glow.ramp(0);
-//        fan.ramp(0);
-//        pump.off();
-//        fuel.set(0);
-//        // matrix.set(0);
-//
-//        if (timeInState() > (long)TIME_FAIL)
-//        {
-//            setState(IDLE);
-//            failures++;
-//
-//            if (failures >= MAX_FAILS)
-//            {
-//                while (true)
-//                {
-//                    delay(5000);
-//                    Serial.println("Locked-out due to failure. Power cycle to reset.");
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//void statePrime()
-//{
-//    fuel.set(8);
-//
-//    if (digitalRead(PIN_PRIME) == HIGH)
-//    {
-//        setState(IDLE);
-//        return;
-//    }
-//}
-//
 //void handleMatrix() {
 //    if (modes.get() == OFF || pump.get() < 255) {
 //        matrix.ramp(0);
@@ -276,30 +154,61 @@ void changeState(NextState s)
 //    matrix.ramp(0);
 //}
 //
-//void sanity()
-//{
-//    if (temp.exhaust() > 325)
-//    {
-//        setState(COOL_DOWN);
-//    }
-//
-//    if (temp.exhaust() > 350)
-//    {
-//        setState(FAIL);
-//        return;
-//    }
-//
-//    if (temp.water() > TEMP_SETPOINT + (2 * TEMP_BAND))
-//    {
-//        setState(COOL_DOWN);
-//    }
-//
-//    if (temp.water() > 85)
-//    {
-//        setState(FAIL);
-//        return;
-//    }
-//}
+
+void sanity() {
+    // Prevent error de-escalation, force fuel off.
+    if (heater.lastError == Error::MAJOR) {
+        heater.fuel.off();
+        return;
+    }
+
+    // Sensor error check (major)
+    if (
+        heater.exhaust.temp() > 500 ||
+        heater.water.temp() > 120 ||
+        heater.exhaust.temp() < -25 ||
+        heater.water.temp() < -25
+    ) {
+        Serial.println("SANITY: SENSOR ERROR LIKELY!");
+        changeState(NextState::FAIL);
+        heater.lastError = Error::MAJOR;
+        return;
+    }
+
+    // Exhaust temp FAR too hot (major)
+    if (heater.exhaust.temp() > TEMP_EXHAUST_LIMIT)
+    {
+        Serial.println("SANITY: EXHAUST TOO HOT (MAJOR)");
+        changeState(NextState::COOL_DOWN);
+        heater.lastError = Error::MAJOR;
+        return;
+    }
+
+    // Water temp FAR too hot (major)
+    if (heater.water.temp() > 90)
+    {
+        Serial.println("SANITY: WATER TOO HOT (MAJOR)");
+        changeState(NextState::COOL_DOWN);
+        heater.lastError = Error::MAJOR;
+        return;
+    }
+
+    // exhaust slightly too hot (minor)
+    if (heater.exhaust.temp() > TEMP_EXHAUST_MAXIMUM + 20)
+    {
+        Serial.println("SANITY: EXHAUST TOO HOT (MINOR)");
+        changeState(NextState::COOL_DOWN);
+        heater.lastError = Error::MINOR;
+    }
+
+    // water slightly too hot (minor)
+    if (heater.water.temp() > TEMP_UPPER + 10)
+    {
+        Serial.println("SANITY: WATER TOO HOT (MINOR)");
+        changeState(NextState::COOL_DOWN);
+        heater.lastError = Error::MINOR;
+    }
+}
 
 void setup()
 {
@@ -371,7 +280,26 @@ void logging()
     Serial.print(":");
 
     if (sec < 10) Serial.print("0");
-    Serial.println(sec);
+    Serial.print(sec);
+
+    if (heater.lastError != Error::NONE){
+        Serial.print(" ERR: ");
+        switch (heater.lastError) {
+            case Error::FAILED_TO_LIGHT:
+                Serial.println("Failed to ignite.");
+                break;
+            case Error::MINOR:
+                Serial.println("MINOR (will reset when call for heat disabled)");
+                break;
+            case Error::MAJOR:
+                Serial.println("MAJOR (check logs & heater, power cycle to reset)");
+                break;
+            default:
+                break;
+        }
+    } else {
+        Serial.println(" OK");
+    }
 }
 
 void loop()
@@ -393,7 +321,6 @@ void loop()
     // run the current state.
     StateResult s = currentState->run(heater);
 
-
     if (s.error != Error::NONE) {
         Serial.print("Encountered an error in state ");
         Serial.println(currentState->name);
@@ -410,6 +337,6 @@ void loop()
 
     // todo: sanity stuff like changing to failure if something really bad has happened.
 
-//    sanity();
+    sanity();
     logging();
 }

@@ -30,4 +30,4 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(Z_DUMMY_TARGET ${SRC_LIST} src/config.h src/TempCtrl.cpp src/TempCtrl.h src/types.h src/SmoothedOutput.cpp src/SmoothedOutput.h src/Fan.h src/Fuel.cpp src/Fuel.h src/Glow.cpp src/Glow.h src/Modes.cpp src/Modes.h)
+add_executable(Z_DUMMY_TARGET ${SRC_LIST})

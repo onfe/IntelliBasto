@@ -14,16 +14,17 @@ enum class NextState {
     IGNITION = 4,
     POST_IGNITION = 5,
     BURN = 6,
-    COOL_DOWN = 7,
-    FAIL = 8,
-    PRIME = 9
+    EXTINGUISH = 7,
+    COOL_DOWN = 8,
+    FAIL = 9,
 };
 
 enum class Error {
     NONE = 0,
     FAILED_TO_LIGHT = 1,
     MINOR = 2,
-    MAJOR = 3
+    MAJOR = 3,
+    RESET = 4
 };
 
 enum class Mode {
