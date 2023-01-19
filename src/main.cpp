@@ -247,9 +247,13 @@ void logging()
 
     Serial.print(heater.modes.getString());
     Serial.print(" - W");
-    Serial.print(heater.water.temp());
+    Serial.print(heater.water.temp(), 1);
+    Serial.print(heater.water.increasing() ? "/" : heater.water.decreasing() ? "\\" : "~");
+    Serial.print(heater.water.rateOfChange(), 1);
     Serial.print(", E");
-    Serial.print(heater.exhaust.temp());
+    Serial.print(heater.exhaust.temp(), 1);
+    Serial.print(heater.exhaust.increasing() ? "/" : heater.exhaust.decreasing() ? "\\" : "~");
+    Serial.print(heater.exhaust.rateOfChange(), 1);
     Serial.print(" - F");
     Serial.print((float)heater.fuel.get() / Fuel::multiplier);
     Serial.print(", A");
@@ -321,11 +325,15 @@ void loop()
     // run the current state.
     StateResult s = currentState->run(heater);
 
-    if (s.error != Error::NONE) {
+    if (s.error != Error::NONE && s.error != Error::RESET) {
         Serial.print("Encountered an error in state ");
         Serial.println(currentState->name);
 
         heater.lastError = s.error;
+    }
+
+    if (s.error == Error::RESET) {
+        heater.lastError = Error::NONE;
     }
 
     // todo: handle resetting errors.

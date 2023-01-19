@@ -45,6 +45,7 @@ public:
 };
 
 class Burn : public State {
+    float maxTempReached;
 public:
     Burn() : State("Burn") {};
     void pre(Heater &h) override;

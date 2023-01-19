@@ -25,7 +25,7 @@ void Modes::update() {
 
     // debouncing
     unsigned char inp0 = inputs[0];
-    for (int i = 1; i < sizeof(inputs) / sizeof(inputs[0]); ++i) {
+    for (unsigned int i = 1; i < sizeof(inputs) / sizeof(inputs[0]); ++i) {
         if (inputs[0] != inputs[i]) return;
     }
 

@@ -16,7 +16,7 @@ public:
     // gives the range of 0 - 8Hz in 1/32Hz (0.03125Hz) increments.
     static const unsigned char multiplier = 32;
 
-    Fuel() : SmoothedOutput(PIN_FUEL, 10000U, 0U, 255U, true), lastTick{millis()} {}
+    Fuel() : SmoothedOutput(PIN_FUEL, 5000U, 0U, 255U, true), lastTick{millis()} {}
 
     void set(unsigned char value) override;
     virtual void set(float value);

@@ -12,7 +12,7 @@ void Idle::pre(Heater &h) {
 StateResult Idle::run(Heater &h) {
 
 
-    if ((h.modes.get() == Mode::HEAT_S1 || h.modes.get() == Mode::HEAT_S1) && h.timeInState > MIN_TIME_IDLE) {
+    if ((h.modes.get() == Mode::HEAT_S1 || h.modes.get() == Mode::HEAT_S2) && h.timeInState > MIN_TIME_IDLE) {
         return StateResult(Error::NONE, NextState::CIRCULATE);
     }
 

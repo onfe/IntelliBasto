@@ -1,11 +1,6 @@
 #ifndef INTELLIBASTO_TYPES_H
 #define INTELLIBASTO_TYPES_H
 
-enum Status {
-    OK = 0,
-    ERROR = 1
-};
-
 enum class NextState {
     UNCHANGED = 0,
     IDLE = 1,

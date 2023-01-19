@@ -9,7 +9,7 @@ void CoolDown::pre(Heater &h) {
 }
 
 StateResult CoolDown::run(Heater &h) {
-    if (h.timeInState > 30 * 1000 && h.water.temp() < TEMP_UPPER && h.exhaust.temp() < 100) {
+    if (h.timeInState > 60U * 1000U && h.water.temp() < TEMP_UPPER && h.exhaust.temp() < 75) {
 
         if (h.lastError != Error::NONE && h.lastError != Error::FAILED_TO_LIGHT) {
             return StateResult(Error::NONE, NextState::FAIL);

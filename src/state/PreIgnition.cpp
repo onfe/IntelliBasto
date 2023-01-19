@@ -14,8 +14,8 @@ StateResult PreIgnition::run(Heater &h) {
         return StateResult(Error::NONE, NextState::IDLE);
     }
 
-    if (h.timeInState > 10 * 1000) {
-        h.fan.ramp(32);
+    if (h.timeInState > 5 * 1000) {
+        h.fan.ramp(24);
         h.glow.rampOn();
     }
 
@@ -27,9 +27,6 @@ StateResult PreIgnition::run(Heater &h) {
 }
 
 void PreIgnition::post(Heater &h) {
-    h.glow.off(); // sanity check to ensure glowplug doesn't get left on.
-    h.fan.ramp(32);
-
     h.matrix.off();
     h.fuel.off();
     h.pump.on();
