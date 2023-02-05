@@ -106,45 +106,14 @@ double TempSensor::rateOfChange() {
 }
 
 bool TempSensor::increasing() {
-    // int size = histFilled ? 16 : histIndex;
-    // if (size < 2) {
-    //     return false;
-    // }
-
-    // int size = 16;
-
-    // int newer = average(history, 4);
-    // int older = average(history + 4, 12);
-
-    // return older + (delta * 10) < newer;
-    return rateOfChange() > 0.5;
+    return rateOfChange() > delta;
 }
 
-//float TempSensor::rateOfChange() {
-//    float total = 0;
-//    const unsigned char size = 64;
-//    for (unsigned char i = 0; i < size - 1; i++) {
-//        total += (this->history[i] - this->history[i + 1]);
-//    }
-//
-//    return total / (float)(size - 1) * 2.5f;
-//}
-
 bool TempSensor::decreasing() {
-    // int size = histFilled ? 16 : histIndex;
-    // if (size < 2) {
-    //     return false;
-    // }
-
-    // int size = 16;
-
-    // int newer = average(history, 4); // first 4
-    // int older = average(history + 8, 8); // next 4
-
-    // return older - (delta * 10) > newer;
-    return rateOfChange() < -0.5;
+    return rateOfChange() < -delta;
 }
 
 bool TempSensor::stable() {
-    return !(increasing() || decreasing());
+    double r = rateOfChange();
+    return abs(r) < delta;
 }

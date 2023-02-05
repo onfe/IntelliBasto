@@ -29,10 +29,10 @@ class TempSensor : public IO {
     const double sh_B;
     const double sh_C;
 
-    static const unsigned char delta = 1;
+    const float delta;
 
 public:
-    TempSensor(unsigned char pin, unsigned int pullup, double sh_A, double sh_B, double sh_C) : IO{pin}, pullup{pullup}, sh_A{sh_A}, sh_B{sh_B}, sh_C{sh_C} {}
+    TempSensor(unsigned char pin, unsigned int pullup, double sh_A, double sh_B, double sh_C, float delta) : IO{pin}, pullup{pullup}, sh_A{sh_A}, sh_B{sh_B}, sh_C{sh_C}, delta{delta} {}
 
     void update() override;
     void init() override {}

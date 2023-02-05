@@ -13,8 +13,8 @@
 struct Heater {
     // Inputs
     Modes modes = Modes();
-    TempSensor water = TempSensor(PIN_THERM_WATER, BIAS_RESISTOR_OHMS, THERM_SH_COEFF_A, THERM_SH_COEFF_B, THERM_SH_COEFF_C);
-    TempSensor exhaust = TempSensor(PIN_THERM_EXHAUST, BIAS_RESISTOR_OHMS, THERM_SH_EXHAUST_A, THERM_SH_EXHAUST_B, THERM_SH_EXHAUST_C);
+    TempSensor water = TempSensor(PIN_THERM_WATER, BIAS_RESISTOR_OHMS, THERM_SH_COEFF_A, THERM_SH_COEFF_B, THERM_SH_COEFF_C, 0.02f);
+    TempSensor exhaust = TempSensor(PIN_THERM_EXHAUST, BIAS_RESISTOR_OHMS, THERM_SH_EXHAUST_A, THERM_SH_EXHAUST_B, THERM_SH_EXHAUST_C, 0.6f);
 
     // Outputs
     Glow glow = Glow();
