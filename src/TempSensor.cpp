@@ -1,18 +1,17 @@
 #include "TempSensor.hpp"
+#include "config.h"
 
 void TempSensor::update() {
     // There's not much point reading a value from the ADC more frequently than 40 times a second as the heater temps
     // don't fluctuate quickly, and reading less frequently makes it easier to average over time.
-    if (millis() - lastUpdate < 25) return;
+    if (millis() - lastUpdate < TS_SAMPLE_RATE) return;
     lastUpdate = millis();
 
     float temp = calculate();
 
     if (temp > 500 || temp < -15) {
-        Serial.println(temp);
         discarded++;
-        if (discarded <= 5) {
-
+        if (discarded <= TS_MAX_DISCARDS) {
             return;
         }
     } else {
@@ -24,17 +23,17 @@ void TempSensor::update() {
     this->temps[tempIndex] = round(temp10);
 
     ++tempIndex;
-    if (tempIndex >= 64) {
+    if (tempIndex >= TS_TEMP_SIZE) {
         tempIndex = 0;
         tempFilled = true;
     }
 
     // Every time we've looped all the way through, add a temp to the history.
-    if (tempIndex % 16 == 0) {
+    if (tempIndex % (TS_TEMP_SIZE / 2) == 0) {
         temp10 = this->temp() * 10;
 
         // shuffle the folks along.
-        for (int i = 1; i < 64; i++) {
+        for (int i = TS_HIST_SIZE - 1; i > 0; i--) {
             this->history[i] = this->history[i - 1];
         }
 
@@ -61,7 +60,7 @@ float TempSensor::steinhart(double resistance) const {
 }
 
 float TempSensor::temp() {
-    int size = tempFilled ? 64 : tempIndex;
+    int size = tempFilled ? TS_TEMP_SIZE : tempIndex;
 
     float t10 = average(temps, size);
     return t10 / 10.0f;
@@ -76,6 +75,34 @@ int TempSensor::average(const int *arr, int size) {
     }
 
     return total / size;
+}
+
+double TempSensor::rateOfChange() {
+
+    double X = TS_HIST_TIME / 2.0;
+    double Y = average(history, TS_HIST_SIZE) / 10.0;
+
+    double top = 0;
+    double bottom = 0;
+    // Serial.print("[");
+
+
+    for (int i = 0; i < TS_HIST_SIZE; i++) {
+        double x = ((TS_TEMP_TIME / 2) * i) - X;
+        double y = (history[i] / 10.0) - Y;
+
+        // if (this->pin == PIN_THERM_WATER) {
+        //             Serial.print(history[i]);
+        //             Serial.print(", ");
+        // }
+
+        top += x * y;
+        bottom += x * x;
+    }
+
+    // Serial.print("]");
+
+    return (top / bottom) * -1000.0;
 }
 
 bool TempSensor::increasing() {
@@ -93,15 +120,15 @@ bool TempSensor::increasing() {
     return rateOfChange() > 0.5;
 }
 
-float TempSensor::rateOfChange() {
-    float total = 0;
-    const unsigned char size = 64;
-    for (unsigned char i = 0; i < size - 1; i++) {
-        total += (this->history[i] - this->history[i + 1]);
-    }
-
-    return total / (float)(size - 1) * 2.5f;
-}
+//float TempSensor::rateOfChange() {
+//    float total = 0;
+//    const unsigned char size = 64;
+//    for (unsigned char i = 0; i < size - 1; i++) {
+//        total += (this->history[i] - this->history[i + 1]);
+//    }
+//
+//    return total / (float)(size - 1) * 2.5f;
+//}
 
 bool TempSensor::decreasing() {
     // int size = histFilled ? 16 : histIndex;

@@ -4,15 +4,18 @@
 #include <Arduino.h>
 #include "IO.hpp"
 
+#define TS_SAMPLE_RATE 10 // ms
+#define TS_TEMP_TIME 500 // ms
+#define TS_HIST_TIME 10000 // ms
+
+#define TS_MAX_DISCARDS 5
+
+#define TS_TEMP_SIZE (TS_TEMP_TIME / TS_SAMPLE_RATE)
+#define TS_HIST_SIZE ((TS_HIST_TIME / TS_TEMP_TIME) * 2)
+
 class TempSensor : public IO {
-    constexpr static const int sample_rate = 100 / 1000;
-    constexpr static const int temp_time = 500; // ms
-    constexpr static const int history_time = 1000; // ms
-    constexpr static const int history_samples = 50;
-
-
-    int temps[temp_time / sample_rate] {};   // approx 1.5s averaging period at 20 samples / second.
-    int history[64] {}; // approx 25s history, filled every time
+    int temps[TS_TEMP_SIZE] {0};
+    int history[TS_HIST_SIZE] {0};
     unsigned char tempIndex = 0;
     bool tempFilled = false;
     // unsigned char histIndex = 0;
@@ -37,7 +40,7 @@ public:
     float temp();
     bool increasing();
     bool decreasing();
-    float rateOfChange();
+    double rateOfChange();
     bool stable();
 
 private:
