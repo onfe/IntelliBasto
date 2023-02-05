@@ -7,8 +7,8 @@ void PostIgnition::pre(Heater &h) {
 
     float fuel = (float)h.fuel.get() / (float)Fuel::multiplier;
 
-    if (fuel < 3.5f) {
-        fuel = 3.5f;
+    if (fuel < 4.0f) {
+        fuel = 4.0f;
     }
 
     h.fuel.ramp(fuel);
@@ -16,7 +16,12 @@ void PostIgnition::pre(Heater &h) {
 }
 
 StateResult PostIgnition::run(Heater &h) {
-    if (h.exhaust.temp() < 50 || h.exhaust.decreasing()) {
+    if (h.exhaust.temp() < 50) {
+        Serial.println("Temp too low.");
+        return StateResult(Error::MINOR, NextState::EXTINGUISH);
+    }
+
+    if (h.exhaust.decreasing()) {
         Serial.println("Temp decreasing.");
         return StateResult(Error::MINOR, NextState::EXTINGUISH);
     }
@@ -34,7 +39,7 @@ StateResult PostIgnition::run(Heater &h) {
         return StateResult(Error::NONE, NextState::BURN);
     }
 
-    if (h.timeInState > 90U * 1000U) {
+    if (h.timeInState > 90UL * 1000UL) {
 
         if (h.exhaust.temp() < TEMP_EXHAUST_MINIMUM) {
             Serial.println("Temp didn't rise enough.");

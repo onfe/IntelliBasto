@@ -7,8 +7,8 @@ void Burn::pre(Heater &h) {
 
     maxTempReached = h.exhaust.temp();
 
-    h.fuel.ramp(4.0f);
-    h.fan.ramp(fuelmap(4.0f));
+    h.fuel.ramp(4.5f);
+    h.fan.ramp(fuelmap(4.5f));
 }
 
 StateResult Burn::run(Heater &h) {
@@ -17,10 +17,12 @@ StateResult Burn::run(Heater &h) {
     }
 
     if (h.exhaust.temp() > TEMP_EXHAUST_MAXIMUM) {
+        Serial.println("too hot.");
         return StateResult(Error::MINOR, NextState::EXTINGUISH);
     }
 
     if (h.exhaust.decreasing() || h.exhaust.temp() < TEMP_EXHAUST_MINIMUM) {
+        Serial.println("decrease or too low");
         return StateResult(Error::MINOR, NextState::EXTINGUISH);
     }
 
