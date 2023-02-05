@@ -155,6 +155,40 @@ void changeState(NextState s)
 //}
 //
 
+void matrix() {
+    if (heater.modes.get() == Mode::OFF) {
+        heater.matrix.rampOff();
+        return;
+    }
+
+    if (heater.pump.get() < 255) {
+        heater.matrix.rampOff();
+        return;
+    }
+
+    if (heater.lastError == Error::MINOR || heater.lastError == Error::MAJOR ) {
+        heater.matrix.off();
+    }
+
+    // Handle Matrix
+    if (heater.modes.get() == Mode::HEAT_S1) {
+        if (heater.water.temp() > TEMP_SETPOINT + 1) {
+            heater.matrix.rampOn();
+        } else if (heater.water.temp() < TEMP_SETPOINT - 1) {
+            heater.matrix.rampOff();
+        }
+
+    } else if (heater.modes.get() == Mode::HEAT_S2) {
+        if (heater.water.temp() > 45) {
+            heater.matrix.rampOn();
+        } else if (heater.water.temp() < 40) {
+            heater.matrix.rampOff();
+        }
+    } else {
+        heater.matrix.off();
+    }
+}
+
 void sanity() {
     // Prevent error de-escalation, force fuel off.
     if (heater.lastError == Error::MAJOR) {
@@ -343,8 +377,7 @@ void loop()
         changeState(s.nextState);
     }
 
-    // todo: sanity stuff like changing to failure if something really bad has happened.
-
+    matrix();
     sanity();
     logging();
 }

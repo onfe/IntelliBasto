@@ -3,7 +3,6 @@
 void PreIgnition::pre(Heater &h) {
     h.glow.off();
     h.fan.set(92);
-    h.matrix.off();
     h.fuel.off();
     h.pump.on();
 }
@@ -27,7 +26,6 @@ StateResult PreIgnition::run(Heater &h) {
 }
 
 void PreIgnition::post(Heater &h) {
-    h.matrix.off();
     h.fuel.off();
     h.pump.on();
 }

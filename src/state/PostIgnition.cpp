@@ -3,7 +3,6 @@
 
 void PostIgnition::pre(Heater &h) {
     h.glow.on();
-    h.matrix.off();
     h.pump.on();
 
     float fuel = (float)h.fuel.get() / (float)Fuel::multiplier;
@@ -61,6 +60,5 @@ StateResult PostIgnition::run(Heater &h) {
 
 void PostIgnition::post(Heater &h) {
     h.glow.off();
-    h.matrix.off();
     h.pump.off();
 }

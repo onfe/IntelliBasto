@@ -3,7 +3,6 @@
 void Extinguish::pre(Heater &h) {
     h.glow.off();
     h.fan.ramp(92);
-    h.matrix.off();
     h.fuel.off();
     h.pump.on();
 }
@@ -23,7 +22,6 @@ StateResult Extinguish::run(Heater &h) {
 void Extinguish::post(Heater &h) {
     h.glow.off(); // sanity check to ensure glowplug doesn't get left on.
     h.fan.rampOff();
-    h.matrix.off();
     h.fuel.off();
     h.pump.on();
 }

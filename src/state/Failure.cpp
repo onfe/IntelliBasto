@@ -3,7 +3,6 @@
 void Failure::pre(Heater &h) {
     h.glow.off();
     h.fan.ramp(32);
-    h.matrix.off();
     h.fuel.off();
     h.pump.on();
 }
@@ -52,7 +51,6 @@ StateResult Failure::run(Heater &h) {
 void Failure::post(Heater &h) {
     h.glow.off();
     h.fan.rampOff();
-    h.matrix.off();
     h.fuel.off();
     h.pump.off();
 }

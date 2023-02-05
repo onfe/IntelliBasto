@@ -3,7 +3,6 @@
 void CoolDown::pre(Heater &h) {
     h.glow.off();
     h.fan.ramp(64);
-    h.matrix.off();
     h.fuel.off();
     h.pump.on();
 }
@@ -24,7 +23,6 @@ StateResult CoolDown::run(Heater &h) {
 void CoolDown::post(Heater &h) {
     h.glow.off();
     h.fan.off();
-    h.matrix.off();
     h.fuel.off();
     h.pump.off();
 }

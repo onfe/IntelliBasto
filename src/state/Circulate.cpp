@@ -2,7 +2,6 @@
 
 void Circulate::pre(Heater &h) {
     h.glow.off();
-    h.matrix.off();
     h.fuel.off();
     h.fan.off();
 

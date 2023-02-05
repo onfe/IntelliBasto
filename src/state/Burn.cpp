@@ -3,7 +3,6 @@
 
 void Burn::pre(Heater &h) {
     h.glow.off();
-    h.matrix.off();
     h.pump.on();
 
     maxTempReached = h.exhaust.temp();
@@ -31,31 +30,14 @@ StateResult Burn::run(Heater &h) {
     }
 
     // if temp drops for some reason.
-    if (et < maxTempReached - 20) {
+    if (et < maxTempReached - 25) {
+        Serial.println("drop 25");
         return StateResult(Error::MINOR, NextState::EXTINGUISH);
     }
 
 
     if (et < maxTempReached - 10 && et < TEMP_EXHAUST_MINIMUM + 50) {
-        return StateResult(Error::MINOR, NextState::EXTINGUISH);
-    }
-
-    // Handle Matrix
-    if (h.modes.get() == Mode::HEAT_S1) {
-        if (h.water.temp() > TEMP_SETPOINT) {
-            h.matrix.rampOn();
-        } else if (h.water.temp() < TEMP_SETPOINT - 1) {
-            h.matrix.rampOff();
-        }
-
-    } else if (h.modes.get() == Mode::HEAT_S2) {
-        if (h.water.temp() > 45) {
-            h.matrix.rampOn();
-        } else if (h.water.temp() < 40) {
-            h.matrix.rampOff();
-        }
-    } else {
-        // shouldn't be possible, but here in case prime gets activated, for example.
+        Serial.println("drop 10");
         return StateResult(Error::MINOR, NextState::EXTINGUISH);
     }
 
@@ -64,7 +46,6 @@ StateResult Burn::run(Heater &h) {
 
 void Burn::post(Heater &h) {
     h.glow.off();
-    h.matrix.rampOff();
     h.pump.on();
 
     h.fuel.off();

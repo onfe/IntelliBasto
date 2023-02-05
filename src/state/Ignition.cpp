@@ -5,7 +5,6 @@
 void Ignition::pre(Heater &h) {
     h.glow.on();
     h.fan.set(24);
-    h.matrix.off();
     h.fuel.set(1.0f);
     h.pump.on();
 }
